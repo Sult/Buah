@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block page_title %}EatingPanda - Tavern{% endblock %}
+
+{% block left_sidebar %}
+    {% include "nav_bar.html" %}
+{% endblock %}
+
+
+{% block content %}
+<div class="content_section">
+    
+    <div class="header_01">{{ tavernhero.hero.name }}</div>
+    
+    
+    <table>
+    {% for attributes in tavernhero.hero.view_hero_attributes %}
+        <tr>
+            <th colspan="2"><br><div class="header_03" style="font-size: 150%; text-align: left;">{{ attributes.category|capfirst }}</div></th>
+        </tr>
+        {% for key, value in attributes.values.items %}
+        <tr>
+            <td>{{ key }}</td>
+            <td>{{ value.get_quality_display }}</td>
+        </tr>
+        {% endfor %}
+    {% endfor %}
+    </table>
+    
+    <br><br><br>
+    TODO:
+    Buy hero
+    
+    <div class="margin_bottom_20"></div>
+</div>
+{% endblock %}

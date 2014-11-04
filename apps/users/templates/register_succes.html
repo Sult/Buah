@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block page_title %}EatingPanda - Register{% endblock %}
+
+{% block left_sidebar %}
+<form action="{% url 'index' %}" method="post">{% csrf_token %}
+{% if login_form.non_field_errors %}
+    <i style="font-size: small;">{{ login_form.non_field_errors|striptags }}</i></td>
+{% endif %}
+
+{% for field in login_form %}
+    {{ field }}
+{% endfor %}
+
+    <a href="{% url 'register_user' %}">register</a>
+    <input style="float: right;" type="submit" value="login" />        
+    <input type="hidden" name="next" value="{{ next }}">
+</form>
+
+{# add closing margin #}
+<div class="margin_bottom_20"></div>
+{% endblock %}
+
+{% block content %}
+<div class="content_section"> 
+    Your registration was succesfull, please confirm you email before proceding. (will come) For now you can just login.
+    <div class="margin_bottom_20"></div>
+</div>
+{% endblock %}

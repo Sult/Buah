@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block page_title %}EatingPanda - Home{% endblock %}
+
+{% block left_sidebar %}
+{% if user.is_authenticated %}
+    {% include "nav_bar.html" %}
+    
+{% else %}
+<form action="" method="post">{% csrf_token %}
+    {% if login_form.non_field_errors %}
+    <p class="form_errors">{{ login_form.non_field_errors|striptags }}</p>
+    {% endif %}
+
+    {% for field in login_form %}
+        {{ field }}<br>
+    {% endfor %}
+
+    <a href="{% url 'register_user' %}">register</a>
+    <input style="float: right;" type="submit" value="login" />        
+    <input type="hidden" name="next" value="{{ next }}">
+</form>
+<div class="margin_bottom_20"></div>
+{% endif %}
+{% endblock %}
+
+
+{% block content %}
+<div class="content_section">
+    Some welcome text and blabla about the game. Need to make some articles
+
+<div class="margin_bottom_20"></div>
+</div>
+            
+{% endblock %}
+

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load extra_tags %}
+
+{% block page_title %}EatingPanda - Tavern{% endblock %}
+
+{% block left_sidebar %}
+    {% include "nav_bar.html" %}
+{% endblock %}
+
+
+{% block content %}
+<div class="content_section">
+    Welcome to the Tavern.
+    There are always a selection of heroes available for hire. <br>
+    Be sure to drop by regularly, a new selection of heroes will be available every 20 to 60 minutes.<br>
+    <br>
+    TODO:
+    Make the different classes in tabs?<br>
+    Give different qualities, different colors<br>
+    <br>
+    <br>
+    <table>
+        <tr>
+            <th><div class="header_03">Name </div></th>
+            <th><div class="header_03">Combat </div></th>
+            <th><div class="header_03">Trade </div></th>
+            <th><div class="header_03">Crafting </div></th>
+            <th colspan="3"><div class="header_03" style="text-align: left;">Price </div></th>
+        </tr>
+    {% for tavernhero in heroes %}
+        <tr>
+            <td>{{ tavernhero.hero.name }}</td>
+            <td>{{ tavernhero.hero.view_combat_score }}</td>
+            <td>{{ tavernhero.hero.view_trade_score }}</td>
+            <td>{{ tavernhero.hero.view_crafting_score }}</td>
+            <td>{{ tavernhero.price|munny }}</td>
+            <td><a href="{% url 'tavern_hero_info' tavernhero.id %}">more info</a></td>
+            <td>Buy</td>
+        </tr>
+    {% endfor %}
+    </table>
+    
+    
+<div class="margin_bottom_20"></div>
+</div>
+            
+{% endblock %}

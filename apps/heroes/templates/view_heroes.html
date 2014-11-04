@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block page_title %}EatingPanda - Heroes{% endblock %}
+
+{% block left_sidebar %}
+    {% include "nav_bar.html" %}
+{% endblock %}
+
+
+{% block content %}
+<div class="content_section">
+    
+    Blabla all your heroes are listed here. <br><br>
+    
+    <table>
+        <tr>
+            <th colspan="2"><div class="header_03">Name </div></th>
+            <th><div class="header_03">Combat </div></th>
+            <th><div class="header_03">Trade </div></th>
+            <th><div class="header_03">Crafting </div></th>
+            <th colspan="3"><div class="header_03">Town </div></th>
+        </tr>
+        
+        {% for hero in heroes %}
+        <tr {% if request.session.hero_id == hero.id %}style="background-color: green;"{% endif %}>
+            <td><a href="?hero={{hero.id}}">{{ hero.name }}</a></td>
+            <td><a href="{% url 'view_hero' hero.id %}">info</a></td>
+            <td>{{ hero.view_combat_score }}</td>
+            <td>{{ hero.view_trade_score }}</td>
+            <td>{{ hero.view_crafting_score }}</td>
+            <td><a href="{% url 'view_town_info' hero.town.slug %}">{{ hero.town.name }}</a></td>
+            
+            {% if hero.active %}
+            <td>WORKING </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
+    
+<div class="margin_bottom_20"></div>
+</div>
+{% endblock %}

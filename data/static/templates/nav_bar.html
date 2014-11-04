@@ -1,0 +1,19 @@
+<div class="header_01">General Shit</div>
+<ul>
+    <li><a href="{% url 'view_heroes' %}">Heroes</a></li>
+    <li><a href="#">2</a></li>
+    <li><a href="#">3</a></li>
+</ul>
+<div class="margin_bottom_20"></div>
+
+{% if request.session.hero_id != None %}
+<div class="header_01">{{ request.session.town_name }}</div>
+<ul>
+    <li><a href="{% url 'view_town_info' request.session.town_slug %}">Town Information</a></li>
+    <li><a href="#">Tavern</a></li>
+    <li><a href="#">3</a></li>
+</ul>
+<div class="margin_bottom_20"></div>
+{% endif %}
+
+

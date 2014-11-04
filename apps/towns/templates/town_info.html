@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block page_title %}EatingPanda - {{ town.name }}{% endblock %}
+
+{% block left_sidebar %}
+    {% include "nav_bar.html" %}
+{% endblock %}
+
+
+{% block content %}
+<div class="content_section">
+    <div>
+        <div class="header_02">{{ town.name }}</div>
+    
+        {{ town.description }}
+    
+        <table>
+            <tr>
+                <td colspan="2">{% if town.controlled %}Player {% else %}NPC {% endif %}Controlled</td>
+            </tr>
+            <tr>
+                <td>Owner </td>
+                <td>
+                    {% if town.owner_player != None %}<a href="#">{{ town.owner_player.username }}</a>{% endif %}
+                    {% if town.owner_npc != None %}<a href="#">{{ town.owner_npc.name }}</a>{% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>Difficulty</td>
+                <td>{{ town.difficulty }}</td>
+            </tr>
+        </table>
+    </div>
+    <br><br>
+    <div>
+        <div class="header_01"><a href="#" style="font-weight: bold;">Outskirt Control</a></div>
+        (not obvious ^ is a link. maybe add ?-icon link)
+        <table>
+            <tr>
+                <th><div class="header_03">Building </div></th>
+                <th><div class="header_03">Level </div></th>
+                <th><div class="header_03">Focus </div></th>
+            </tr>
+            {% for building in town.outskirtbuilding_set.all %}
+            <tr>
+                <td>{{ building.get_building_display }}</td>
+                <td>{{ building.level }}</td>
+                <td {% if building.focus == 0 %}style="color: red;"{% else %}style="color: green;"{% endif %}>
+                    {{ building.get_focus_display }}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<div class="margin_bottom_20"></div>
+</div>
+{% endblock %}
