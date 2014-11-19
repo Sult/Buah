@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load users_tags %}
 
-{% block page_title %}EatingPanda - Tavern{% endblock %}
+{% block page_title %}{{ request.session.town_name }} - Tavern Hero Information{% endblock %}
 
 {% block left_sidebar %}
     {% include "nav_bar.html" %}
@@ -10,8 +11,13 @@
 {% block content %}
 <div class="content_section">
     
-    <div class="header_01">{{ tavernhero.hero.name }}</div>
+    <div class="header_02">{{ tavernhero.hero.name }}</div>
     
+    {% if result.error %}
+        <p class="form_errors">{{ result.message }}</p>
+    {% elif not result.error %}
+        <p class="form_success">{{ result.message }}</p>
+    {% endif %}
     
     <table>
     {% for attributes in tavernhero.hero.view_hero_attributes %}
@@ -26,10 +32,15 @@
         {% endfor %}
     {% endfor %}
     </table>
+    <br>
+    <br>
+    <form action="" method="post">{% csrf_token %}
+        <div class="header_03">Price </div>
+        {{ tavernhero.price|munny }} <button type="submit" name="tavernhero_id" value="{{ tavernhero.id }}">BUY</button>
+    </form>
     
     <br><br><br>
-    TODO:
-    Buy hero
+    
     
     <div class="margin_bottom_20"></div>
 </div>

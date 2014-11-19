@@ -15,8 +15,36 @@ from datetime import datetime, timedelta
 class HeroMathValues(VersionControl):
     """ Holds numbers used in hero related equations and functions. to balance and provide a smooth system """
     
-    #hero creation
-    pass
+    #base values
+    base_stamina = models.IntegerField()                    #base stamina of a hero (used for calculating max stamina)
+    base_hitpoints = models.IntegerField()                  #base hitpoints (increased by heroes hitpoints stat
+    
+    
+    #hero % per point
+    hitpoints_per_point = models.FloatField()
+    critical_per_point = models.FloatField()
+    power_per_point = models.FloatField()
+    defense_per_point = models.FloatField()
+    block_per_point = models.FloatField()
+    hit_chance_per_point = models.FloatField()
+
+    #Trading/Transport Stats
+    speed_per_point = models.FloatField()
+    cargo_per_point = models.FloatField()
+    reputation_per_point = models.FloatField()
+    trade_orders_per_point = models.FloatField()
+    tax_reduction_per_point = models.FloatField()
+    contracts_per_point = models.FloatField()
+
+    #Craftin/Gathering
+    crafting_per_point = models.FloatField()
+    efficiency_per_point= models.FloatField()
+    stamina_per_point = models.FloatField()
+    gathering_per_point = models.FloatField()
+    endurance_per_point = models.FloatField()
+    luck_per_point = models.FloatField()
+
+    
     
 
 
@@ -58,18 +86,18 @@ class StatPerLevel(models.Model):
     HIT_CHANCE = "hit_chance"
     #Trader Attributes
     #CHARISMA = "charisma"
-    MOVEMENT_SPEED = "movement_speed"
-    CARGO = "cargo"
-    WEIGHT = "weight"
+    SPEED = "speed"
+    CARGO = "cargo"                             #volume increase
+    REPUTATION = "reputation"                           
     TRADE_ORDERS = "trade_orders"
     TAX_REDUCTION = "tax_reduction"
     CONTRACTS = "contracts"
     #Crafter Attributes
     #WISDOM = "wisdom"
-    CRAFTING_SPEED = "crafting_speed"
+    CRAFTING = "crafting"
     EFFICIENCY = "efficiency"
-    MULTITASKING = "multitasking"
-    GATHERING_SPEED = "gathering_speed"
+    STAMINA = "stamina"
+    GATHERING = "gathering"
     ENDURANCE = "endurance"
     LUCK = "luck"
     ATTRIBUTES = (
@@ -81,17 +109,17 @@ class StatPerLevel(models.Model):
         (BLOCK, "Block"),
         (HIT_CHANCE, "Hit Chance"),
         #(CHARISMA, "Charisma"),
-        (MOVEMENT_SPEED, "Movement Speed"),
+        (SPEED, "Speed"),
         (CARGO, "Cargo"),
-        (WEIGHT, "Weight"),
+        (REPUTATION, "Reputation"),
         (TRADE_ORDERS, "Trade Orders"),
         (TAX_REDUCTION, "Tax Reduction"),
         (CONTRACTS, "Contracts"),
         #(WISDOM, "Wisdom"),
-        (CRAFTING_SPEED, "Crafting Speed"),
+        (CRAFTING, "Crafting"),
         (EFFICIENCY, "Efficiency"),
-        (MULTITASKING, "Multitasking"),
-        (GATHERING_SPEED, "Gathering Speed"),
+        (STAMINA, "Stamina"),
+        (GATHERING, "Gathering"),
         (ENDURANCE, "Endurance"),
         (LUCK, "Luck"),
     )
@@ -141,23 +169,31 @@ class Hero(models.Model):
     hit_chance = models.ForeignKey(StatPerLevel, null=True, related_name="+")
 
     #Trading/Transport Stats
-    movement_speed = models.ForeignKey(StatPerLevel, null=True, related_name="+")
+    speed = models.ForeignKey(StatPerLevel, null=True, related_name="+")
     cargo = models.ForeignKey(StatPerLevel, null=True, related_name="+")
-    weight = models.ForeignKey(StatPerLevel, null=True, related_name="+")
+    reputation = models.ForeignKey(StatPerLevel, null=True, related_name="+")
     trade_orders = models.ForeignKey(StatPerLevel, null=True, related_name="+")
     tax_reduction = models.ForeignKey(StatPerLevel, null=True, related_name="+")
     contracts = models.ForeignKey(StatPerLevel, null=True, related_name="+")
 
     #Craftin/Gathering
-    crafting_speed = models.ForeignKey(StatPerLevel, null=True, related_name="+")
+    crafting = models.ForeignKey(StatPerLevel, null=True, related_name="+")
     efficiency = models.ForeignKey(StatPerLevel, null=True, related_name="+")
-    multitasking = models.ForeignKey(StatPerLevel, null=True, related_name="+")
-    gathering_speed = models.ForeignKey(StatPerLevel, null=True, related_name="+")
+    stamina = models.ForeignKey(StatPerLevel, null=True, related_name="+")
+    gathering = models.ForeignKey(StatPerLevel, null=True, related_name="+")
     endurance = models.ForeignKey(StatPerLevel, null=True, related_name="+")
     luck = models.ForeignKey(StatPerLevel, null=True, related_name="+")
 
     #job attributes
     active = models.BooleanField(default=False)
+    
+    #items
+    hand = models.OneToOneField("elements.Equipment", related_name="+", null=True)
+    chest = models.OneToOneField("elements.Equipment", related_name="+", null=True)
+    trinket = models.OneToOneField("elements.Equipment", related_name="+", null=True)
+    transport = models.OneToOneField("elements.Equipment", related_name="+", null=True)
+    
+    
     
     def __unicode__(self):
         return "Hero"
@@ -169,17 +205,16 @@ class Hero(models.Model):
         fields = ["hitpoints", "hit_chance", "power", "critical", "defense", "block"]
         return fields
     
-    
     #return fields related to trade and transport
     @staticmethod
     def trade_attributes():
-        fields = ["cargo", "weight", "movement_speed", "trade_orders", "contracts", "tax_reduction"]
+        fields = ["cargo", "reputation", "speed", "trade_orders", "contracts", "tax_reduction"]
         return fields
     
     #retun fields relatedtocrafting and gathering
     @staticmethod
     def craft_attributes():
-        fields = ["crafting_speed", "efficiency", "multitasking", "gathering_speed", "endurance", "luck"]
+        fields = ["crafting", "efficiency", "stamina", "gathering", "endurance", "luck"]
         return fields
         
     #returns all attribute fields
@@ -191,7 +226,6 @@ class Hero(models.Model):
         return combat + trade + craft
     
     
-    
 ############ HERO CREATION #################
     
     #return a random StatsPerLevel object based on attribute
@@ -200,12 +234,10 @@ class Hero(models.Model):
         stat = StatPerLevel.objects.filter(attribute=attribute).order_by("?")[0]
         return stat
 
-    
     #get a random hero name
     @staticmethod
     def random_hero_name():
         return HeroName.objects.all().order_by("?")[0].name
-    
     
     #Generate a random hero template
     #These will be used as buyable objects in a tavern. And will be the source of player actions
@@ -220,7 +252,6 @@ class Hero(models.Model):
         hero.save()
         return hero
     
-    
     # set a combination of fields+ values for a new hero
     # example of fields: [["crafting_speed", decent], ["efficiency", bad], ["multitasking", ver_bad], ["gathering_speed", decent], ["endurance", bad], ["luck", very_bad]]
     def set_hero_starting_attributes(self, fields):
@@ -229,7 +260,7 @@ class Hero(models.Model):
             setattr(self, field[0], value)
         self.save()
         
-
+        
 ####### HERO VIEW FUNCTIONS ###########
     #get attribute value
     @staticmethod
@@ -241,7 +272,6 @@ class Hero(models.Model):
         scores[StatPerLevel.GOOD] = 1
         scores[StatPerLevel.EXCELLENT] = 2
         return scores
-        
         
     #simplified quality view for a hero. (only categories are combat/trade/construction
     def get_category_score(self, category):
@@ -259,7 +289,6 @@ class Hero(models.Model):
         
         return total
     
-    
     #convert the score into a readable quality
     @staticmethod
     def view_category_score(score):
@@ -275,7 +304,6 @@ class Hero(models.Model):
             return "Excellent"
         else:
             return "Foutjes"
-    
 
     # View combat score in template
     def view_combat_score(self):
@@ -289,7 +317,6 @@ class Hero(models.Model):
     def view_crafting_score(self):
         return self.view_category_score(self.get_category_score("crafting"))
             
-                    
     # returns an ordered dictionary with the fields as keys and corrosponding values
     def get_attribute_values(self, fields):
         combat_list = OrderedDict()
@@ -298,9 +325,6 @@ class Hero(models.Model):
             combat_list[key.title()] = getattr(self, field)
         return combat_list
 
-    
-    
-    
     #returns a list of namedtuples for combat/trading/crafting stats
     def view_hero_attributes(self):
         HeroAttributes = namedtuple("HeroAttributes", "category, values")
@@ -315,14 +339,81 @@ class Hero(models.Model):
         return hero_attributes
             
         
-    #def created_shortdate(self):
-        #return defaultfilters.date(self.created, "SHORT_DATETIME_FORMAT")
+######### Attribute Functions ############################
+    #get item bonus from 1 item
+    def item_bonus(self, item_slot, attribute):
+        try:
+            return getattr(getattr(self, item_slot), attribute)
+        #no item equiped returns no bonus
+        except AttributeError:
+            return 0
+    
+    
+    #get the attribute bonus from all items
+    def total_item_bonus(self, attribute):
+        item_slots = ["hand", "chest", "trinket", "transport"]
+        total = 0
+        for item_slot in item_slots:
+            total += self.item_bonus(item_slot, attribute)
         
+        return total
         
+    
+    # get percentage increase from attribute
+    def percentage_bonus(self, attribute):
+        hero_values = HeroMathValues.current_version(HeroMathValues)
+        item_score = self.total_item_bonus(attribute)
+        total_score = getattr(self, attribute).level_score(self.level) + item_score
+    
+        bonus = getattr(hero_values, attribute + "_per_point") * total_score
+        #convert bonus to a % modifier (like 32 to 1.32)
+        percent_bonus = 1 + bonus / 100
+        return percent_bonus
+    
+    
+    #convert positive (increase) bonuse to negative (reduce) bonus
+    def negative_percentage_bonus(self, attribute):
+        positive_bonus = self.percentage_bonus(attribute)
+        #convert te negative bonus (gets cheaper)
+        bonus = 1 - (positive_bonus - 1)
+        return bonus
+    
+    
+    #calculates the amount of resources gathered in 1 hour
+    def gather_income(self, gather_speed, quality):
+        #get hero gethering modifier
+        gather_bonus = self.percentage_bonus("gathering")
+        #speed_bonus = hero.percentage_bonus("gathering")
+        income = gather_speed * quality * gather_bonus 
+        return income
         
+    
+    #get current stamina
+    def total_stamina(self):
+        hero_values = HeroMathValues.current_version(HeroMathValues)
+        stamina_bonus = self.percentage_bonus("stamina")
+        total = hero_values.base_stamina * stamina_bonus
+        return total
+    
+    
+    #stamina cost per hour of working
+    def stamina_loss(self, stamina_cost):
+        modifier = self.negative_percentage_bonus("endurance")
+        cost = stamina_cost * modifier
+        return cost
+    
         
-        
-        
+    
+
+##### Form timer functions ##############
+    #get max time (minutes) possible with current stamina
+    def max_time_with_stamina(self, stamina_cost):
+        stamina = self.total_stamina()
+        stamina_loss = self.stamina_loss(stamina_cost) / 60
+        if stamina_loss == 0:
+            return 9999999
+        return stamina / stamina_loss
+
         
         
         

@@ -9,6 +9,7 @@ urlpatterns = patterns('',
     url(r'^', include('apps.users.urls')),
     url(r'^', include('apps.towns.urls')),
     url(r'^', include('apps.heroes.urls')),
+    url(r'^', include('apps.features.urls')),
 )
 
 #if settings.DEBUG:

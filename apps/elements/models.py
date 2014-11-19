@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import Max                #to get a maxvalue in queryset
 
-
+import random
 
 #abstract class used for versioncontrol
 class VersionControl(models.Model):
@@ -36,105 +36,147 @@ class VersionControl(models.Model):
         return latest
         
         
-       
-       
+
+
+class SpawnOutskirt(models.Model):
+    """ depending on difficulty has different basic spawnrates """
+    
+    difficulty = models.IntegerField(unique=True)                       #difficulties 1 to 18
+    tier_1 = models.IntegerField()
+    tier_2 = models.IntegerField()
+    tier_3 = models.IntegerField()
+    tier_4 = models.IntegerField()
+    
+    def __unicode__(self):
+        return "Outskirt difficulty: %d" % self.difficulty
+    
+    
+    #total value of all 3 fields
+    def total_from_tiers(self):
+        total = self.tier_1 + self.tier_2 + self.tier_3 + self.tier_4
+        return total
+    
+    
+    
+    
+
+
+
+############ Items #############
         
         
 class Item(models.Model):
     """ Data every item has. No matter the shape or size """
     
-    name = models.CharField(max_length=63)
+    name = models.CharField(max_length=63, unique=True)
     description = models.TextField()
-    level = models.IntegerField()
     volume = models.FloatField()
-    item_weight = models.FloatField()
     
     class Meta:
         abstract = True
 
     def __unicode__(self):
         return self.name
+        
 
 
-
-
-class WarriorEquipment(Item):
-    """ Items a warrior hero can equip """
+class Equipment(Item):
+    """ Items a hero can equip """
     
-    WEAPON = "weapon"
-    ARMOR = "armor"
-    SHIELD = "shield"
-    WARRIORSLOTS = (
-        (WEAPON, "Weapon"),
-        (ARMOR, "Armor"),
-        (SHIELD, "Shield"),
+    HAND = "hand"
+    CHEST = "chest"
+    TRINKET = "trinket"
+    TRANSPORT = "transport"
+    CATEGORIES = (
+        (HAND, "Hand"),
+        (CHEST, "Chest"),
+        (TRINKET, "Trinket"),
+        (TRANSPORT, "Transport"),
     )
-
-    slot = models.CharField(max_length=15, choices=WARRIORSLOTS)
     
-    #warrior
-    strength = models.IntegerField(default=0)
+    
+    category = models.CharField(max_length=15, choices=CATEGORIES)
+    
     hitpoints = models.IntegerField(default=0)
     critical = models.IntegerField(default=0)
     power = models.IntegerField(default=0)
     defense = models.IntegerField(default=0)
     block = models.IntegerField(default=0)
     hit_chance = models.IntegerField(default=0)
-    
-    
-    
-    
-    
-    
 
-
-class TraderEquipment(Item):
-    """ equipment for a trader hero """
-    
-    TRANSPORT = "transport"
-    DOCUMENT = "document"
-    AMULET = "amulet"
-    TRADERSLOTS = (
-        (TRANSPORT, "Transport"),
-        (DOCUMENT, "Document"),
-        (AMULET, "Amulet"),
-    )
-    
-    slot = models.CharField(max_length=15, choices=TRADERSLOTS)
-    #trader
-    charisma = models.IntegerField(default=0)
-    movement_speed = models.IntegerField(default=0)
+    #Trading/Transport Stats
+    speed = models.IntegerField(default=0)
     cargo = models.IntegerField(default=0)
-    weight = models.IntegerField(default=0)
+    reputation = models.IntegerField(default=0)
     trade_orders = models.IntegerField(default=0)
     tax_reduction = models.IntegerField(default=0)
     contracts = models.IntegerField(default=0)
-    
-    
-    
-    
-class CrafterEquipment(Item):
-    """ Items a crafter hero can equip """
-    
-    TOOL = "tool"
-    COMPENDIUM = "compendium"
-    TRINKET = "trinket"
-    CRAFTERSLOTS = (
-        (TOOL, "Tool"),
-        (COMPENDIUM, "Compendium"),
-        (TRINKET, "Trinket"),
-    )
-    
-    slot = models.CharField(max_length=15, choices=CRAFTERSLOTS)
-    #crafter
-    wisdom = models.IntegerField(default=0)
-    crafting_speed = models.IntegerField(default=0)
+
+    #Craftin/Gathering
+    crafting = models.IntegerField(default=0)
     efficiency = models.IntegerField(default=0)
-    multitasking = models.IntegerField(default=0)
-    gathering_speed = models.IntegerField(default=0)
+    stamina = models.IntegerField(default=0)
+    gathering = models.IntegerField(default=0)
     endurance = models.IntegerField(default=0)
     luck = models.IntegerField(default=0)
 
 
 
+
+
+
+class Resource(Item):
+    """ Basic (gatherable) items """
+    
+    TIER_1 = 1
+    TIER_2 = 2
+    TIER_3 = 3
+    TIER_4 = 4
+    TIERS = (
+        (TIER_1, "Tier 1"),
+        (TIER_2, "Tier 2"),
+        (TIER_3, "Tier 3"),
+        (TIER_4, "Tier 4"),
+    )
+    
+    METAL = "metal"
+    STONE = "stone"
+    WOOD = "wood"
+    ANIMAL = "animal"
+    FOOD = "food"
+    CATEGORIES = (
+        (METAL, "Metal"),
+        (STONE, "Stone"),
+        (WOOD, "Wood"),
+        (ANIMAL, "Animal"),
+        (FOOD, "Food"),
+    )
+    
+    category = models.CharField(max_length=15, choices=CATEGORIES)
+    tier = models.IntegerField(choices=TIERS)
+    location = models.CharField(max_length=31, unique=True)
+    heroes_min = models.IntegerField()
+    heroes_max = models.IntegerField()
+    gather_speed = models.FloatField()                              #base speed of gathering this resource per hour
+    stamina_cost = models.FloatField()                              #hunger costs per hour of gathering
+    
+    
+    def __unicode__(self):
+        return "%s(%s)" % (self.location, self.resource.name)
+
+    
+    #get random amount of heroes on 1 resource
+    #TODO: maybe add ways to increase
+    def random_heroes_on_resource(self):
+        amount = random.randint(self.heroes_min, self.heroes_max)
+        return amount
+    
+    
+    
+    
+    
+    
+    
+    
+    
 

@@ -24,11 +24,11 @@
         {% for hero in heroes %}
         <tr {% if request.session.hero_id == hero.id %}style="background-color: green;"{% endif %}>
             <td><a href="?hero={{hero.id}}">{{ hero.name }}</a></td>
-            <td><a href="{% url 'view_hero' hero.id %}">info</a></td>
+            <td><a href="{% url 'hero' hero.id %}">info</a></td>
             <td>{{ hero.view_combat_score }}</td>
             <td>{{ hero.view_trade_score }}</td>
             <td>{{ hero.view_crafting_score }}</td>
-            <td><a href="{% url 'view_town_info' hero.town.slug %}">{{ hero.town.name }}</a></td>
+            <td><a href="{% url 'town_info' hero.town.slug %}">{{ hero.town.name }}</a></td>        
             
             {% if hero.active %}
             <td>WORKING </td>

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-{% load extra_tags %}
+{% load users_tags %}
 
-{% block page_title %}EatingPanda - Tavern{% endblock %}
+{% block page_title %}{{ request.session.town_name }} - Tavern{% endblock %}
 
 {% block left_sidebar %}
     {% include "nav_bar.html" %}
@@ -18,7 +18,13 @@
     Make the different classes in tabs?<br>
     Give different qualities, different colors<br>
     <br>
+    {% if result.error %}
+        <p class="form_errors">{{ result.message }}</p>
+    {% elif not result.error %}
+        <p class="form_success">{{ result.message }}</p>
+    {% endif %}
     <br>
+    <form action="" method="post">{% csrf_token %}
     <table>
         <tr>
             <th><div class="header_03">Name </div></th>
@@ -35,13 +41,14 @@
             <td>{{ tavernhero.hero.view_crafting_score }}</td>
             <td>{{ tavernhero.price|munny }}</td>
             <td><a href="{% url 'tavern_hero_info' tavernhero.id %}">more info</a></td>
-            <td>Buy</td>
+            <td><button type="submit" name="tavernhero_id" value="{{ tavernhero.id }}">BUY</button></td>
         </tr>
     {% endfor %}
     </table>
+    </form>
     
     
-<div class="margin_bottom_20"></div>
+    <div class="margin_bottom_20"></div>
 </div>
             
 {% endblock %}

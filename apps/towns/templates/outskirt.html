@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load towns_tags %}
+
+{% block page_title %}Outskirt - {{ outskirt.resource.location }}{% endblock %}
+
+{% block left_sidebar %}
+    {% include "nav_bar.html" %}
+{% endblock %}
+
+
+{% block content %}
+<div class="content_section">
+    
+    
+    <div class="header_02">{{ outskirt.outskirt.resource.location }}</div>
+    <p><strong>Quality: </strong>{{ outskirt.outskirt.get_quality_display }}</p>
+    <p><strong>{{ outskirt.outskirt.resource.name }}: </strong>{{ outskirt.income }}</p>
+    {% if outskirt.stamina_loss %}
+    <p><strong>Stamina: </strong>{{ outskirt.loss }}</p>
+    {% endif %}
+    <p><strong>Room: </strong>
+    {% if not outskirt.room %}
+        <span style="color: red;">Full</span>
+    {% else %}
+        {{ outskirt.open_slots }}<br>
+        <form action="" method="POST">{% csrf_token %}
+            {{ outskirt_form }}
+            <input type="submit" value="Go to work">
+        </form>
+        
+<!--
+        <form action="" method="POST">{% csrf_token %}
+            {{ outskirt.form }}
+            <input type="hidden" name="outskirt_id" value="{{ outskirt.outskirt.id }}">
+            <input type="submit" value="Go to work">
+        </form>    
+-->
+        
+        
+    {% endif %}
+    </p>
+    
+    
+    
+    
+        
+        
+    <div class="margin_bottom_20"></div>
+</div>
+            
+{% endblock %}

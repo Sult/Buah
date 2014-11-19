@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block page_title %}EatingPanda - {{ town.name }}{% endblock %}
+{% block page_title %}{{ request.session.town_name }} - Town Information{% endblock %}
 
 {% block left_sidebar %}
     {% include "nav_bar.html" %}
@@ -33,20 +33,23 @@
     </div>
     <br><br>
     <div>
-        <div class="header_01"><a href="#" style="font-weight: bold;">Outskirt Control</a></div>
-        (not obvious ^ is a link. maybe add ?-icon link)
+        <div class="header_02">Outskirts</div>
         <table>
             <tr>
-                <th><div class="header_03">Building </div></th>
-                <th><div class="header_03">Level </div></th>
-                <th><div class="header_03">Focus </div></th>
+                <th>Location: </th>
+                <th>Resource: </th>
+                <th>Room: </th>
             </tr>
-            {% for building in town.outskirtbuilding_set.all %}
+            {% for outskirt in town.outskirt.outskirtresource_set.all %}
             <tr>
-                <td>{{ building.get_building_display }}</td>
-                <td>{{ building.level }}</td>
-                <td {% if building.focus == 0 %}style="color: red;"{% else %}style="color: green;"{% endif %}>
-                    {{ building.get_focus_display }}
+                <td><a href="{% url 'outskirt_info' outskirt.id %}">{{ outskirt.resource.location }}</a></td>
+                <td>{{ outskirt.resource.name }}</td>
+                <td>
+                {% if 1 > outskirt.open_slots %}
+                    <span style="color: red;">Full</span>
+                {% else %}
+                    <span>{{ outskirt.open_slots }} open slots</span>
+                {% endif %}
                 </td>
             </tr>
             {% endfor %}
@@ -59,6 +62,6 @@
     
     
     
-<div class="margin_bottom_20"></div>
+    <div class="margin_bottom_20"></div>
 </div>
 {% endblock %}

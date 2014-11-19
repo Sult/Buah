@@ -74,14 +74,14 @@ class Profile(models.Model):
                 return [["hitpoints", decent], ["hit_chance", bad], ["power", bad], ["critical", very_bad], ["defense", bad], ["block", bad]]
         elif category == "trading":
             if quality == "good":
-                return [["cargo", decent], ["weight", decent], ["movement_speed", good], ["trade_orders", decent], ["contracts", decent], ["tax_reduction", bad]]
+                return [["cargo", decent], ["reputation", decent], ["speed", good], ["trade_orders", decent], ["contracts", decent], ["tax_reduction", bad]]
             else:
-                return [["cargo", bad], ["weight", bad], ["movement_speed", decent], ["trade_orders", bad], ["contracts", bad], ["tax_reduction", very_bad]]
+                return [["cargo", bad], ["reputation", bad], ["speed", decent], ["trade_orders", bad], ["contracts", bad], ["tax_reduction", very_bad]]
         elif category == "crafting":
             if quality == "good":
-                return [["crafting_speed", good], ["efficiency", decent], ["multitasking", bad], ["gathering_speed", good], ["endurance", decent], ["luck", bad]]
+                return [["crafting", good], ["efficiency", decent], ["stamina", bad], ["gathering", good], ["endurance", decent], ["luck", bad]]
             else:
-                return [["crafting_speed", decent], ["efficiency", bad], ["multitasking", very_bad], ["gathering_speed", decent], ["endurance", bad], ["luck", very_bad]]
+                return [["crafting", decent], ["efficiency", bad], ["stamina", very_bad], ["gathering", decent], ["endurance", bad], ["luck", very_bad]]
     
     
     
@@ -104,35 +104,18 @@ class Profile(models.Model):
             new.town=town
             new.name = new.random_hero_name()
             new.save()
-        
 
 
+###### User modify functions    #############
 
-
-
-
-    
-    #add money  from player never gives increased money
-    #TODO: Add increased income from standings
-    def add_money(self, amount, player):
-        if player:
-            self.money += amount
-            self.save()
-            return
-        
-        #if NPC amount can be in/decreased with standing
-        else:
-            self.money += amount
-            self.save()        
-    
-    
-    #remove money from player
-    #TODO: build in extra/less cost based on standings
-    def remove_money(self, amount):
-        self.money -= amount
+    #update munny for player. value has always already taken into account the reputations
+    #for paying munny make sure its a negative number
+    #TODO: taxes to guild or tribe needs to be build
+    def update_munny(self, munny):
+        self.munny += munny
         self.save()
     
-        
+    
     #add xp to character
     #TODO: Possible bonus xp from who knows what
     def add_xp(self, amount):
@@ -145,19 +128,44 @@ class Profile(models.Model):
     def maximum_owned_heroes(self):
         user_values = UserMathValues.current_version(UserMathValues)
         base = user_values.heroes_owned_max 
-        from_levels = user_values.heroes_owned_per_level * self.level
-        return base + from_levels
+        from_levels = round(user_values.heroes_owned_per_level * self.level)
+        print int(base + from_levels)
+        return int(base + from_levels)
         
     
     #get maximum active heroes
     def maximum_active_heroes(self):
         user_values = UserMathValues.current_version(UserMathValues)
         base = user_values.heroes_active_max
-        from_levels = user_values.heroes_active_per_level * self.level
-        return base + from_levels
+        from_levels = round(user_values.heroes_active_per_level * self.level)
+        return int(base + from_levels)
     
     
+    #get current amount of active heroes    
+    def active_heroes(self):
+        return get_model("heroes", "Hero").objects.filter(user=self.user, active=True).count()
     
+    
+    #get owned heroes
+    def owned_heroes(self):
+        return get_model("heroes", "Hero").objects.filter(user=self.user).count()
+
+    
+    # see if you have room for another hero
+    def new_hero_available(self):
+        if self.owned_heroes() < self.maximum_owned_heroes():
+            return True
+        else:
+            return False
+
+
+    # see if player has enough munny to buy
+    def has_enough_munny(self, value):
+        if self.munny > value:
+            return True
+        else:
+            return False
+
 
 
 

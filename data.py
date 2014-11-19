@@ -3,12 +3,19 @@ from apps.towns.models import TownMathValues, Town, Tavern, TavernHero
 from apps.users.models import UserMathValues, Profile
 from django.contrib.auth.models import User
 
-##################### user shizzlemcnizzle ####################
+
+#create standard objects
+execfile("towns.py")
+execfile("items.py")
+
+
+
+##################### Mathvalues ####################
 #starting values
 def user_math_values():
     UserMathValues.objects.create(
         version=1,
-        starting_munny = 15000,
+        starting_munny = 25000,
         #heroes
         heroes_owned_max = 5,
         heroes_owned_per_level = 1,
@@ -25,7 +32,38 @@ user_math_values()
 
 def add_first_hero_version():
     HeroMathValues.objects.create(
+        version = 1,
+        
+        #base values
+        base_stamina = 300,
+        base_hitpoints = 100,
+        
+        #hero % per point
+        hitpoints_per_point = 1,
+        critical_per_point = 0.1,
+        power_per_point = 0.3,
+        defense_per_point = 0.3,
+        block_per_point = 0.1,
+        hit_chance_per_point = 0.1,
+
+        #Trading/Transport Stats
+        speed_per_point = 0.3,
+        cargo_per_point = 0.4,
+        reputation_per_point = 0.3,
+        trade_orders_per_point = 0.3,
+        tax_reduction_per_point = 0.1,
+        contracts_per_point = 0.1,
+
+        #Craftin/Gathering
+        crafting_per_point = 0.3,
+        efficiency_per_point= 0.3,
+        stamina_per_point = 0.5,
+        gathering_per_point = 0.25,
+        endurance_per_point = 0.05,
+        luck_per_point = 0.1,
     )
+
+add_first_hero_version()
 
 
 def add_hero_names():
@@ -59,23 +97,23 @@ def add_stats_per_level():
         #(StatPerLevel.GOOD, StatPerLevel.WISDOM, 21, 4, 1.14),
         #(StatPerLevel.EXCELLENT, StatPerLevel.WISDOM, 23, 5, 1.17),
         
-        (StatPerLevel.VERY_BAD, StatPerLevel.MOVEMENT_SPEED, 7, 0.5, 0.7),
-        (StatPerLevel.BAD, StatPerLevel.MOVEMENT_SPEED, 9, 1, 0.8),
-        (StatPerLevel.DECENT, StatPerLevel.MOVEMENT_SPEED, 11, 1.5, 0.9),
-        (StatPerLevel.GOOD, StatPerLevel.MOVEMENT_SPEED, 13, 2, 1),
-        (StatPerLevel.EXCELLENT, StatPerLevel.MOVEMENT_SPEED, 15, 2.5, 1.1),
+        (StatPerLevel.VERY_BAD, StatPerLevel.SPEED, 7, 0.5, 0.7),
+        (StatPerLevel.BAD, StatPerLevel.SPEED, 9, 1, 0.8),
+        (StatPerLevel.DECENT, StatPerLevel.SPEED, 11, 1.5, 0.9),
+        (StatPerLevel.GOOD, StatPerLevel.SPEED, 13, 2, 1),
+        (StatPerLevel.EXCELLENT, StatPerLevel.SPEED, 15, 2.5, 1.1),
         
-        (StatPerLevel.VERY_BAD, StatPerLevel.CRAFTING_SPEED, 7, 0.5, 0.7),
-        (StatPerLevel.BAD, StatPerLevel.CRAFTING_SPEED, 9, 1, 0.8),
-        (StatPerLevel.DECENT, StatPerLevel.CRAFTING_SPEED, 11, 1.5, 0.9),
-        (StatPerLevel.GOOD, StatPerLevel.CRAFTING_SPEED, 13, 2, 1),
-        (StatPerLevel.EXCELLENT, StatPerLevel.CRAFTING_SPEED, 15, 2.5, 1.1),
+        (StatPerLevel.VERY_BAD, StatPerLevel.CRAFTING, 7, 0.5, 0.7),
+        (StatPerLevel.BAD, StatPerLevel.CRAFTING, 9, 1, 0.8),
+        (StatPerLevel.DECENT, StatPerLevel.CRAFTING, 11, 1.5, 0.9),
+        (StatPerLevel.GOOD, StatPerLevel.CRAFTING, 13, 2, 1),
+        (StatPerLevel.EXCELLENT, StatPerLevel.CRAFTING, 15, 2.5, 1.1),
         
-        (StatPerLevel.VERY_BAD, StatPerLevel.GATHERING_SPEED, 7, 0.5, 0.7),
-        (StatPerLevel.BAD, StatPerLevel.GATHERING_SPEED, 9, 1, 0.8),
-        (StatPerLevel.DECENT, StatPerLevel.GATHERING_SPEED, 11, 1.5, 0.9),
-        (StatPerLevel.GOOD, StatPerLevel.GATHERING_SPEED, 13, 2, 1),
-        (StatPerLevel.EXCELLENT, StatPerLevel.GATHERING_SPEED, 15, 2.5, 1.1),
+        (StatPerLevel.VERY_BAD, StatPerLevel.GATHERING, 7, 0.5, 0.7),
+        (StatPerLevel.BAD, StatPerLevel.GATHERING, 9, 1, 0.8),
+        (StatPerLevel.DECENT, StatPerLevel.GATHERING, 11, 1.5, 0.9),
+        (StatPerLevel.GOOD, StatPerLevel.GATHERING, 13, 2, 1),
+        (StatPerLevel.EXCELLENT, StatPerLevel.GATHERING, 15, 2.5, 1.1),
         
         (StatPerLevel.VERY_BAD, StatPerLevel.HITPOINTS, 32, 10, 1.09),
         (StatPerLevel.BAD, StatPerLevel.HITPOINTS, 38, 12, 1.12),
@@ -119,11 +157,11 @@ def add_stats_per_level():
         (StatPerLevel.GOOD, StatPerLevel.CARGO, 16, 2.5, 0.55),
         (StatPerLevel.EXCELLENT, StatPerLevel.CARGO, 18, 3, 0.6),
         
-        (StatPerLevel.VERY_BAD, StatPerLevel.WEIGHT, 4, 2, 0.35),
-        (StatPerLevel.BAD, StatPerLevel.WEIGHT, 5, 2.5, 0.4),
-        (StatPerLevel.DECENT, StatPerLevel.WEIGHT, 6, 3, 0.45),
-        (StatPerLevel.GOOD, StatPerLevel.WEIGHT, 7, 3.5, 0.5),
-        (StatPerLevel.EXCELLENT, StatPerLevel.WEIGHT, 8, 4, 0.55),
+        (StatPerLevel.VERY_BAD, StatPerLevel.REPUTATION, 4, 2, 0.35),
+        (StatPerLevel.BAD, StatPerLevel.REPUTATION, 5, 2.5, 0.4),
+        (StatPerLevel.DECENT, StatPerLevel.REPUTATION, 6, 3, 0.45),
+        (StatPerLevel.GOOD, StatPerLevel.REPUTATION, 7, 3.5, 0.5),
+        (StatPerLevel.EXCELLENT, StatPerLevel.REPUTATION, 8, 4, 0.55),
         
         (StatPerLevel.VERY_BAD, StatPerLevel.TRADE_ORDERS, 2, 3.5, 0.5),
         (StatPerLevel.BAD, StatPerLevel.TRADE_ORDERS, 3, 4.5, 0.6),
@@ -149,11 +187,11 @@ def add_stats_per_level():
         (StatPerLevel.GOOD, StatPerLevel.EFFICIENCY, 16, 2.5, 0.61),
         (StatPerLevel.EXCELLENT, StatPerLevel.EFFICIENCY, 18, 3, 0.68),
         
-        (StatPerLevel.VERY_BAD, StatPerLevel.MULTITASKING, 10, 0, 0.4),
-        (StatPerLevel.BAD, StatPerLevel.MULTITASKING, 12, 0, 0.47),
-        (StatPerLevel.DECENT, StatPerLevel.MULTITASKING, 14, 0, 0.54),
-        (StatPerLevel.GOOD, StatPerLevel.MULTITASKING, 16, 0, 0.61),
-        (StatPerLevel.EXCELLENT, StatPerLevel.MULTITASKING, 18, 0, 0.68),
+        (StatPerLevel.VERY_BAD, StatPerLevel.STAMINA, 10, 0, 0.4),
+        (StatPerLevel.BAD, StatPerLevel.STAMINA, 12, 0, 0.47),
+        (StatPerLevel.DECENT, StatPerLevel.STAMINA, 14, 0, 0.54),
+        (StatPerLevel.GOOD, StatPerLevel.STAMINA, 16, 0, 0.61),
+        (StatPerLevel.EXCELLENT, StatPerLevel.STAMINA, 18, 0, 0.68),
         
         (StatPerLevel.VERY_BAD, StatPerLevel.ENDURANCE, 4, 1, 0.4),
         (StatPerLevel.BAD, StatPerLevel.ENDURANCE, 6, 2, 0.47),
@@ -190,35 +228,8 @@ add_stats_per_level()
 
 
 
-
-
-
-
-
-#################### Town Objects ######################
-#starting values
-def add_first_town_version():
-    TownMathValues.objects.create(
-        version = 1,
-        tavern_refresh_min = 20*60,
-        tavern_refresh_max = 60*60,
-        tavern_heroes_min = 7,
-        tavern_heroes_max = 14,
-    )
-
-add_first_town_version()
-
-
-
-
-
-
-
-
-
-
-
 def add_admin():
-    user = User.objects.create_user('Ikke', "slikke@ikkes.pikke", "1234")
+    user = User.objects.create_user('Sult', "slikke@ikkes.pikke", "1234")
+    #user = User.objects.get(id=1)
     Profile.create_profile(user)
 add_admin()

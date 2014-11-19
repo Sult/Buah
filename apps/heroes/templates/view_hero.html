@@ -10,7 +10,7 @@
 
 {% block content %}
 <div class="content_section">
-    <form action="{% url 'view_hero' hero.id %}" method="post">{% csrf_token %}
+    <form action="{% url 'hero' hero.id %}" method="post">{% csrf_token %}
     {{ hero_form.name.errors }}
     {{ hero_form }}<input type="submit" value="Save" />
     </form>
@@ -24,7 +24,7 @@
             </tr>
             <tr>
                 <td>Town </td>
-                <td><a href="{% url 'view_town_info' hero.town.slug %}">{{ hero.town.name }}</a></td>
+                <td><a href="{% url 'town_info' hero.town.slug %}">{{ hero.town.name }}</a></td>
             </tr>
             <tr>
                 <td>Level </td>

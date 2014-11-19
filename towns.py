@@ -1,7 +1,31 @@
 from django.template.defaultfilters import slugify
 
-from apps.towns.models import Town, Tavern, OutskirtBuilding
+from apps.towns.models import Town, Tavern, Townhall, Outskirt
 from apps.users.models import Npc, Tribe
+
+
+###NEED TO ADD THE TOWN OF DUNDEE
+# https://www.youtube.com/watch?v=VlhQZFTvAn4
+
+
+#starting math values
+def town_math_values():
+    TownMathValues.objects.create(
+        version = 1,
+        tavern_refresh_min = 20,
+        tavern_refresh_max = 60,
+        tavern_heroes_min = 7,
+        tavern_heroes_max = 14,
+        
+        townhall_tier_value_per_level = 5,
+        townhall_category_value_per_level = 3,
+        townhall_category_base_value = 20,
+        
+        outskirt_duration_min = 5,
+        outskirt_duration_max = 24,
+    )
+
+town_math_values()
 
 
 
@@ -93,7 +117,7 @@ def fill_tribe_shells():
         edit_tribe.likes = Tribe.objects.get(name=tribe[2])
         edit_tribe.hates = Tribe.objects.get(name=tribe[3])
         edit_tribe.save()
-        print tribe[1]
+
 
 
 def add_other_npcs():
@@ -121,37 +145,26 @@ add_other_npcs()
 
     
 
-def add_warhead_towns():
-    towns = (
-        #name, owner, difficulty,   #ouskirts townhall, barrracks, tradehouse
-        ("Kelna", "Soam Ironhammer", 8,         2, 6, 1),
-        ("Blackpool", "Gregor Barrin", 4,       2, 3, 1),
-        ("Inverness", "Elmer Bullseye", 1,      1, 1, 1),                   #startingtown
-        ("Festiniog", "Thorburn Phantom", 1,    1, 1, 1),
-        ("Aquarin", "Thorburn Phantom", 3,      1, 2, 2),
+def add_inverness_town():
+    town = Town.objects.create(
+        slug = slugify("Inverness"),
+        controlled = False,
+        owner_npc = Npc.objects.get(name="Elmer Bullseye"),
+        difficulty = 1,
+        #coordinates = models.ForeignKey(Coordinates)
+        name = "Inverness",
+        description = "",
     )
+        
+    #create buildings
+    Tavern.objects.create(town=town)
+    Townhall.objects.create(town=town, level=1, category=Townhall.NO_FOCUS, tier=Townhall.NO_TIER)
     
-    for town in towns:
-        new = Town.objects.create(
-            slug = slugify(town[0]),
-            controlled = False,
-            owner_npc = Npc.objects.get(name=town[1]),
-            difficulty = town[2],
-            #coordinates = models.ForeignKey(Coordinates)
-            name = town[0],
-            description = "",
-        )
-        
-        #create tavern
-        Tavern.objects.create(town=new)
-        
-        #create outskirts (townhall, barracks, mineter)
-        OutskirtBuilding.objects.create(town=new, level=town[3], building=OutskirtBuilding.TOWNHALL)
-        OutskirtBuilding.objects.create(town=new, level=town[4], building=OutskirtBuilding.BARRACKS)
-        OutskirtBuilding.objects.create(town=new, level=town[5], building=OutskirtBuilding.TRADEHOUSE)
+    #create surroundings    
+    Outskirt.objects.create(town=town, resources_min=2, resources_max=4)
 
 
-add_warhead_towns()
+add_inverness_town()
         
         
         

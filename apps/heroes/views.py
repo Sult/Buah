@@ -10,7 +10,7 @@ from apps.heroes.forms import HeroNameForm
 
 
 @login_required
-def view_heroes(request):
+def heroes(request):
     heroes = Hero.objects.filter(user=request.user)
     
     if request.GET:
@@ -35,7 +35,7 @@ def view_heroes(request):
 
 
 @login_required
-def view_hero(request, hero_id):
+def hero(request, hero_id):
     hero = get_object_or_404(Hero, pk=hero_id)
     hero_form = HeroNameForm(request.POST or None)
     

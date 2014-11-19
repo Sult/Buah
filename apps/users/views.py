@@ -8,8 +8,6 @@ from django.core.context_processors import csrf
 from django.contrib.auth.models import User
 
 from apps.users.forms import RegistrationForm, LoginForm
-
-from apps.features.models import NewsArticle
 from apps.users.models import Profile
 from apps.heroes.models import Hero
 
@@ -35,35 +33,9 @@ def index(request):
             #add sessions if they dont exist yet
             add_needed_sessions(request)
             
-            
             return HttpResponseRedirect(request.POST.get('next') or reverse('index'))
     
-    total_articles = NewsArticle.objects.all().count()
-    
-    #handle news articles
-    if request.GET:
-        try:
-            show_articles = int(request.GET.get("extra_articles", "0")) + 5
-        except ValueError:
-            show_articles = 5
-        
-        if show_articles > total_articles:
-            show_articles = total_articles
-    else:
-        show_articles = 5
-     
-    first_article = 0
-    if show_articles > 5:
-        first_article = show_articles - 5
-    
-    if request.user.is_authenticated():
-        news_articles = NewsArticle.objects.all().order_by('date')[first_article:show_articles]
-    else:
-        news_articles = NewsArticle.objects.filter(public=True).order_by('-date')[first_article:show_articles]
-    
-    
-    return render(request, "index.html", {"login_form": login_form, 'next': request.GET.get('next', ''),
-                                        "news_articles": news_articles, "total_articles": total_articles, "show_articles": show_articles})
+    return render(request, "index.html", {"login_form": login_form, 'next': request.GET.get('next', '')})
     
     
     
