@@ -50,7 +50,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR + "/data/", "buah.db"),
+        'NAME': os.path.join(BASE_DIR, "data", "buah.db"),
     }
 }
 
@@ -77,15 +77,15 @@ DATE_INPUT_FORMATS = ('%d/%m/%Y', '%d/%m/%Y')
 
 STATIC_URL = '/data/static/'
 
-MEDIA_ROOT = '/home/ikke/panda/Buah/data/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'data', 'media')
 
 MEDIA_URL = '/data/media/'
 
-STATIC_ROOT = '/home/ikke/panda/Buah/data/djangostatic/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'data', 'djangostatic')
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    ('assets', '/home/ikke/panda/Buah/data/static'),
+    ('assets', os.path.join(BASE_DIR, 'data', 'static')),
 )
 
 # List of finder classes that know how to find static files in
@@ -109,7 +109,7 @@ TEMPLATE_LOADERS = (
 
 
 TEMPLATE_DIRS = (
-    '/home/ikke/panda/Buah/data/static/templates',
+    os.path.join(BASE_DIR + '/data/static/templates'),
 )
 
 INSTALLED_APPS = (
