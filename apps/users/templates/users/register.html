@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block page_title %}EatingPanda - Register{% endblock %}
+
+{% block left_sidebar %}
+
+<div>We respect your privacy and do not tolerate spam and will never give away your information to any third party. 
+Nor will we send you unsolicited email.</div>
+
+<div class="margin_bottom_20 horizontal_divider"></div>
+<div class="margin_bottom_20"></div>
+
+{% endblock %}
+
+
+{% block content %}
+<div class="content_section">
+	<div class="header_02">Registration</div>
+    
+    <form action="{% url 'register_user' %}" method="post">{% csrf_token %}
+    
+    {{ form.non_field_errors }}
+	{% for field in form %}
+        {{ field.label }}<br>
+		<div class="form_errors">{{ field }} {{ field.errors.as_text}}</div><br>
+	{% endfor %}
+
+		<input type="submit" value="Register" />
+
+	</form>
+		
+		
+    <div class="margin_bottom_20"></div>
+    
+    Remove first/last name? (old user-form ^^)
+    <br><br>
+    
+    
+	<div class="cleaner"></div>
+</div>
+            
+<div class="margin_bottom_20 horizontal_divider"></div> 
+<div class="margin_bottom_20"></div>
+{% endblock %}

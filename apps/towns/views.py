@@ -17,7 +17,7 @@ def town_info(request, slug):
     town = get_object_or_404(Town, slug=slug)
     
     
-    return render(request, "town_info.html", {"town": town})
+    return render(request, "towns/town_info.html", {"town": town})
     
 
 
@@ -35,7 +35,7 @@ def tavern(request):
         result = buy_tavernhero(request.POST, request.user)
         return render(request, "tavern.html", {"heroes": heroes, "result": result})
         
-    return render(request, "tavern.html", {"heroes": heroes})
+    return render(request, "towns/tavern.html", {"heroes": heroes})
     
     
 
@@ -47,7 +47,7 @@ def tavern_hero_info(request, tavernhero_id):
         result = buy_tavernhero(request.POST, request.user)
         return render(request, "tavernhero.html", {"tavernhero": tavernhero, "result": result})
     
-    return render(request, "tavernhero.html", {"tavernhero": tavernhero})
+    return render(request, "towns/tavernhero.html", {"tavernhero": tavernhero})
 
 
 
@@ -56,16 +56,22 @@ def tavern_hero_info(request, tavernhero_id):
 def outskirts(request):
     town = get_object_or_404(Town, slug=request.session['town_slug'])
     town.outskirt.check_for_refresh()
-    
-    #outskirt_form = OutskirtForm(request.POST or None)
-    #outskirt_form = OutskirtForm(request.session["hero_id"], town.outskirt, True)
+    hero = Hero.objects.get(id=request.session["hero_id"])
+    outskirts = town.outskirt.display_outskirts(hero.id)
+    refresh_at = town.outskirt.refresh_at
     
     if request.POST:
-        print request.POST
+        try:
+            result = OutskirtForm.save_form(request.POST, request.session['hero_id'], request.POST['outskirt_id'])
+        
+        except KeyError:
+            result = "Don't customize POST data"
+        return render(request, "outskirts.html", {"hero": hero, "outskirts": outskirts, "refresh_at": refresh_at, "result": result})
     
-    outskirts = town.outskirt.display_outskirts(request.session["hero_id"])
-    refresh_at = town.outskirt.refresh_at
-    return render(request, "outskirts.html", {"outskirts": outskirts, "refresh_at": refresh_at})
+    #make sure forms disapear for a hero that is active
+    #chekc if hero is actif before submiting form
+    
+    return render(request, "towns/outskirts.html", {"hero": hero, "outskirts": outskirts, "refresh_at": refresh_at})
     
     
 
@@ -79,7 +85,7 @@ def outskirt_info(request, outskirt_id):
     if request.POST:
         print request.POST
     
-    return render(request, "outskirt.html", {"outskirt": outskirt_view, "outskirt_form": outskirt_form})
+    return render(request, "towns/outskirt.html", {"hero": hero, "outskirt_view": outskirt_view, "outskirt_form": outskirt_form, "outskirt": outskirt})
     
 
 

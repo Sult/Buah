@@ -35,7 +35,7 @@ def index(request):
             
             return HttpResponseRedirect(request.POST.get('next') or reverse('index'))
     
-    return render(request, "index.html", {"login_form": login_form, 'next': request.GET.get('next', '')})
+    return render(request, "users/index.html", {"login_form": login_form, 'next': request.GET.get('next', '')})
     
     
     
@@ -55,13 +55,13 @@ def register_user(request):
         
         return HttpResponseRedirect(reverse('register succes'))
     
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'users/register.html', {'form': form})
     
 
 
 def register_succes(request):
     login_form = LoginForm(request.POST or None)
-    return render(request, "register_succes.html", {"login_form": login_form})
+    return render(request, "users/register_succes.html", {"login_form": login_form})
 
 
 

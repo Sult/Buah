@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block page_title %}{{ request.session.town_name }} - Town Information{% endblock %}
+
+{% block left_sidebar %}
+    {% include "nav_bar.html" %}
+{% endblock %}
+
+
+{% block content %}
+<div class="content_section">
+    <div>
+        <div class="header_02">{{ town.name }}</div>
+    
+        {{ town.description }}
+    
+        <table>
+            <tr>
+                <td colspan="2">{% if town.controlled %}Player {% else %}NPC {% endif %}Controlled</td>
+            </tr>
+            <tr>
+                <td>Owner </td>
+                <td>
+                    {% if town.owner_player != None %}<a href="#">{{ town.owner_player.username }}</a>{% endif %}
+                    {% if town.owner_npc != None %}<a href="#">{{ town.owner_npc.name }}</a>{% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>Difficulty</td>
+                <td>{{ town.difficulty }}</td>
+            </tr>
+        </table>
+    </div>
+    <br><br>
+    <div>
+        <div class="header_02">Outskirts</div>
+        <table>
+            <tr>
+                <th>Location: </th>
+                <th>Resource: </th>
+                <th>Room: </th>
+            </tr>
+            {% for outskirt in town.outskirt.outskirtresource_set.all %}
+            <tr>
+                <td><a href="{% url 'outskirt_info' outskirt.id %}">{{ outskirt.resource.location }}</a></td>
+                <td>{{ outskirt.resource.name }}</td>
+                <td>
+                {% if 1 > outskirt.open_slots %}
+                    <span style="color: red;">Full</span>
+                {% else %}
+                    <span>{{ outskirt.open_slots }} open slots</span>
+                {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    <div class="margin_bottom_20"></div>
+</div>
+{% endblock %}

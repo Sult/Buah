@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.timezone import utc
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 #from django.template import defaultfilters
 
 
@@ -18,6 +19,8 @@ class HeroMathValues(VersionControl):
     #base values
     base_stamina = models.IntegerField()                    #base stamina of a hero (used for calculating max stamina)
     base_hitpoints = models.IntegerField()                  #base hitpoints (increased by heroes hitpoints stat
+    base_cargo = models.IntegerField()                      #base volume a hero can carry
+    
     
     #hero % per point
     hitpoints_per_point = models.FloatField()
@@ -184,7 +187,8 @@ class Hero(models.Model):
     luck = models.ForeignKey(StatPerLevel, null=True, related_name="+")
 
     #job attributes
-    active = models.BooleanField(default=False)
+    stamina_current = models.IntegerField(null=True)
+    hitpoints_current = models.IntegerField(null=True)
     
     #items
     hand = models.OneToOneField("elements.Equipment", related_name="+", null=True)
@@ -197,39 +201,32 @@ class Hero(models.Model):
     def __unicode__(self):
         return "Hero"
     
-    #return the list of general attributes
-    @staticmethod
-    def general_attributes():
-        fields = ["hitpoints", "stamina", "speed"]
-        return fields
-    
     
     #return fields related to combat
     @staticmethod
     def combat_attributes():
-        fields = ["hit_chance", "power", "critical", "defense", "block"]
+        fields = ["hitpoints", "hit_chance", "power", "critical", "defense", "block"]
         return fields
     
     #return fields related to trade and transport
     @staticmethod
     def trade_attributes():
-        fields = ["cargo", "reputation", "trade_orders", "contracts", "tax_reduction"]
+        fields = ["cargo", "reputation", "speed", "trade_orders", "contracts", "tax_reduction"]
         return fields
     
     #retun fields relatedtocrafting and gathering
     @staticmethod
     def craft_attributes():
-        fields = ["crafting", "efficiency", "gathering", "endurance", "luck"]
+        fields = ["crafting", "efficiency", "stamina", "gathering", "endurance", "luck"]
         return fields
         
     #returns all attribute fields
     @staticmethod
     def all_attributes_fields():
-        general = Hero.general_attributes()
         combat = Hero.combat_attributes()
         trade = Hero.trade_attributes()
         craft = Hero.craft_attributes()
-        return general + combat + trade + craft
+        return combat + trade + craft
     
     
 ############ HERO CREATION #################
@@ -255,7 +252,11 @@ class Hero(models.Model):
         for field in all_attributes:
             setattr(hero, field, Hero.random_quality(field))
         
+        #add current stamina and hitpoints
+        hero.hitpoints_current = hero.total_hitpoints()
+        hero.stamina_current = hero.total_stamina()
         hero.save()
+        
         return hero
     
     # set a combination of fields+ values for a new hero
@@ -295,7 +296,6 @@ class Hero(models.Model):
         
         return total
     
-    
     #convert the score into a readable quality
     @staticmethod
     def view_category_score(score):
@@ -323,76 +323,27 @@ class Hero(models.Model):
     #view crafting score in template
     def view_crafting_score(self):
         return self.view_category_score(self.get_category_score("crafting"))
+            
+    # returns an ordered dictionary with the fields as keys and corrosponding values
+    def get_attribute_values(self, fields):
+        combat_list = OrderedDict()
+        for field in fields:
+            key = field.replace("_", " ")
+            combat_list[key.title()] = getattr(self, field)
+        return combat_list
 
-    #returns a list of namedtuples for combat/trading/crafting stats for 
+    #returns a list of namedtuples for combat/trading/crafting stats
     def view_hero_attributes(self):
         HeroAttributes = namedtuple("HeroAttributes", "category, values")
-        categories = ["general", "combat", "trade", "craft"]
+        categories = ["combat", "trade", "craft"]
         hero_attributes = []
         
         for category in categories:
-            values = getattr(self, "display_" + category + "_attributes")()
+            fields = getattr(self, category + "_attributes")()
+            values = self.get_attribute_values(fields)
             hero_attributes.append(HeroAttributes(category=category, values=values))
         
         return hero_attributes
-    
-    
-    #get string to display score in hero overview
-    def display_overview_score(self, attribute):
-        if attribute == "trade_offers":
-            return "TEMP"
-        elif attribute == "speed":
-            return "%d (-%d%% travel time)" % (self.total_score(attribute), round(self.percentage_bonus(attribute) - 1, 2))
-        elif attribute == "hitpoints":
-            return "%s/%s" % (0, self.total_hitpoints())
-        elif attribute == "stamina":
-            return "%d/%d" % (0, self.total_stamina())
-        else:
-            return "%d (%d%% bonus)" % (self.total_score(attribute), round(self.percentage_bonus(attribute) - 1, 2))
-    
-    
-    #display general attribute scores in hero overview
-    def display_general_attributes(self):
-        attributes = OrderedDict()
-        fields = Hero.general_attributes()
-        for field in fields:
-            key = field.replace("_", " ").title()
-            attributes[key] = self.display_overview_score(field)
-        return attributes    
-    
-    #display combat attributes in hero overview
-    def display_combat_attributes(self):
-        attributes = OrderedDict()
-        fields = Hero.combat_attributes()
-        for field in fields:
-            key = field.replace("_", " ").title()
-            attributes[key] = self.display_overview_score(field)
-        return attributes
-        
-    
-    #display combat attributes in hero overview
-    def display_trade_attributes(self):
-        attributes = OrderedDict()
-        fields = Hero.trade_attributes()
-        for field in fields:
-            key = field.replace("_", " ").title()
-            attributes[key] = self.display_overview_score(field)
-        return attributes
-        
-    
-    #display combat attributes in hero overview
-    def display_craft_attributes(self):
-        attributes = OrderedDict()
-        fields = Hero.craft_attributes()
-        for field in fields:
-            key = field.replace("_", " ").title()
-            attributes[key] = self.display_overview_score(field)
-        return attributes
-    
-    
-            
-        
-        
             
         
 ######### Attribute Functions ############################
@@ -414,18 +365,19 @@ class Hero(models.Model):
         
         return total
     
-    
-    #get heroes total attribute score
-    def total_score(self, attribute):
-        total_score = getattr(self, attribute).level_score(self.level) + self.total_item_bonus(attribute)
+    #def total attribute
+    def total_attribute_score(self, attribute):
+        item_score = self.total_item_bonus(attribute)
+        total_score = getattr(self, attribute).level_score(self.level) + item_score
         return total_score
         
-    
     
     # get percentage increase from attribute
     def percentage_bonus(self, attribute):
         hero_values = HeroMathValues.current_version(HeroMathValues)
-        bonus = getattr(hero_values, attribute + "_per_point") * self.total_score(attribute)
+        total_score = self.total_attribute_score(attribute)
+    
+        bonus = getattr(hero_values, attribute + "_per_point") * total_score
         #convert bonus to a % modifier (like 32 to 1.32)
         percent_bonus = 1 + bonus / 100
         return percent_bonus
@@ -446,23 +398,30 @@ class Hero(models.Model):
         #speed_bonus = hero.percentage_bonus("gathering")
         income = gather_speed * quality * gather_bonus 
         return income
+        
     
-    
-    #get total hero hitpoints
-    def total_hitpoints(self):
-        hero_values = HeroMathValues.current_version(HeroMathValues)
-        hitpoints_bonus = self.percentage_bonus("hitpoints")
-        total = hero_values.base_hitpoints * hitpoints_bonus
-        return int(total)
-    
-    
-    
-    #get current stamina
+    #calculate total stamina
     def total_stamina(self):
         hero_values = HeroMathValues.current_version(HeroMathValues)
         stamina_bonus = self.percentage_bonus("stamina")
-        total = hero_values.base_stamina * stamina_bonus
-        return int(total)
+        total = int(hero_values.base_stamina * stamina_bonus)
+        return total
+    
+    #get total hitpoints of a hero
+    def total_hitpoints(self):
+        hero_values = HeroMathValues.current_version(HeroMathValues)
+        hitpoint_bonus = self.percentage_bonus("hitpoints")
+        total = int(hero_values.base_hitpoints * hitpoint_bonus)
+        return total
+    
+    
+    #get total cargospace of a her
+    def total_cargo_space(self):
+        hero_values = HeroMathValues.current_version(HeroMathValues)
+        cargo_bonus = self.percentage_bonus("cargo")
+        total = int(hero_values.base_cargo * cargo_bonus)
+        return total
+    
     
     
     #stamina cost per hour of working
@@ -472,6 +431,8 @@ class Hero(models.Model):
         return cost
     
         
+    #calulate staminacost from minutes
+    
     
 
 ##### Form timer functions ##############
@@ -488,6 +449,31 @@ class Hero(models.Model):
         
         
 
+#### job functions ############
+    #check if a hero is active (working on some job)
+    def active(self):
+        #check if hero is working at an outskirt
+        result = self.works_at_outskirt()
+        if result:
+            return result
+        
+    
+    
+    #see if hero is working at an outskirt
+    def works_at_outskirt(self):
+        try:
+            self.outskirtworker.job_finnished()
+            #TODO: more info about the job
+            return True
+        except ObjectDoesNotExist:
+            return False
+    
+    
+    
 
+
+
+
+    
     
     

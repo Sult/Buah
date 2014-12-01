@@ -430,9 +430,7 @@ class Outskirt(models.Model):
     #get time left for callculating choices (in minutes)
     def time_left(self):
         now = datetime.utcnow().replace(tzinfo=utc)
-        
         minutes_left = (self.refresh_at - now).seconds // 60
-        
         return minutes_left
         
     
@@ -513,21 +511,66 @@ class OutskirtResource(models.Model):
         return str(round(cost, 1))
     
     
-    
+    #display the users currently gathering at this outskirt
+    def display_other_workers(self):
+        workers = self.outskirtworker_set.all()
+        return workers
+        
+        
     
 
 class OutskirtWorker(models.Model):
     """ keeps track of what hero works what workyard for how long """
     
-    resource = models.ForeignKey('towns.OutskirtResource')
+    outskirtresource = models.ForeignKey('towns.OutskirtResource')
     hero = models.OneToOneField("heroes.Hero")
     started_at = models.DateTimeField()
     finnished_at = models.DateTimeField()
     
     
+    #see if timer has ran out
+    def job_finnished(self):
+        now = datetime.utcnow().replace(tzinfo=utc)
+        if now > self.finnished_at:
+            self.finalize_job()
+    
+    #finalize a job remove object and add resources
+    #kwargs is used when a job is finalized by user
+    def finalize_job(self, **kwargs):
+        if "finnished" in kwargs:
+            finnished = kwargs["finnished"]
+        else:
+            finnished = self.finnished_at
+        
+        duration = finnished - started_at
+        amount_gained = self.resource_gained(duration)
+        
+        #add items
+        self.add_resources(amount_gained)
+    
+    
+    #ad the gained resources to the users storehouse
+    def add_resources(self, amount):
+        storehouse, created = get_model("itemcontrol", "Storehouse").objects.get_or_create(user=self.hero.user, town=self.outskirtresource.outskirt.town)
+        storehouse.add_item(self.outskirtresource.resource, amount)
+        
+        
+    
+    
+    #get resources gained on time interval
+    def resource_gained(self, duration):
+        minutes = duration.seconds // 60
+        income = self.hero.gather_income(self.outskirtresource.resource.gather_speed, self.quality) / 60.0
+        return int(minutes * income)
     
     
     
+
+
+
+
+
+
 
 
 

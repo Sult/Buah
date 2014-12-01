@@ -50,7 +50,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, "data", "buah.db"),
+        'NAME': os.path.join(BASE_DIR + "/data/", "buah.db"),
     }
 }
 
@@ -77,15 +77,15 @@ DATE_INPUT_FORMATS = ('%d/%m/%Y', '%d/%m/%Y')
 
 STATIC_URL = '/data/static/'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'data', 'media')
+MEDIA_ROOT = '/home/ikke/panda/Buah/data/media/'
 
 MEDIA_URL = '/data/media/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'data', 'djangostatic')
+STATIC_ROOT = '/home/ikke/panda/Buah/data/djangostatic/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    ('assets', os.path.join(BASE_DIR, 'data', 'static')),
+    ('assets', '/home/ikke/panda/Buah/data/static'),
 )
 
 # List of finder classes that know how to find static files in
@@ -108,9 +108,9 @@ TEMPLATE_LOADERS = (
 
 
 
-TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR + '/data/static/templates'),
-)
+#TEMPLATE_DIRS = (
+    #os.path.join(BASE_DIR, 'data', 'static', 'templates'),
+#)
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -121,6 +121,10 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     
     'django.contrib.humanize',
+    
+    #django taggit https://github.com/alex/django-taggit
+    #'taggit',
+    
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
@@ -130,6 +134,7 @@ INSTALLED_APPS = (
     'apps.heroes',
     'apps.elements',
     'apps.towns',
+    'apps.itemcontrol',
     
 )
 

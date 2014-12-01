@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load towns_tags %}
+
+{% block page_title %}{{ request.session.town_name }} - Outskirts{% endblock %}
+
+{% block left_sidebar %}
+    {% include "nav_bar.html" %}
+{% endblock %}
+
+
+{% block content %}
+<div class="content_section">
+    {{ request.session.town_name }} has resourcefull outskirts. You can use your hero to gather these resources.<br>
+    These outskirts are available untill "{{ refresh_at }}"
+    <br>
+    <br>
+    
+    {% if result  %}
+    {{ result }}
+    <br>
+    <br>
+    {% endif %}
+    
+    {% for outskirt in outskirts %}
+    <p style="font-size: 115%;"><a href="{% url 'outskirt_info' outskirt.outskirt.id %}">{{ outskirt.outskirt.resource.location }}</a></p>
+    <p><strong>Quality: </strong>{{ outskirt.outskirt.get_quality_display }}</p>
+    <p><strong>{{ outskirt.outskirt.resource.name }}: </strong>{{ outskirt.income }}</p>
+    
+    {% if outskirt.stamina_loss %}
+    <p><strong>Stamina: </strong>{{ outskirt.loss }}</p>
+    {% endif %}
+    
+    <p><strong>Room: </strong>
+    
+    {% if not outskirt.room %}
+        <span style="color: red;">Full</span>
+    {% else %}
+        {{ outskirt.open_slots }}<br>
+        {% if not hero.active %}
+        <form action="" method="POST">{% csrf_token %}
+            {{ outskirt.form }}
+            <input type="hidden" name="outskirt_id" value="{{ outskirt.outskirt.id }}">
+            <input type="submit" value="Go to work">
+        </form>
+        {% endif %}
+    {% endif %}
+    
+    </p>
+    <br><br>
+    {% endfor %}
+
+    TODO: <a href="http://www.w3schools.com/jquerymobile/tryit.asp?filename=tryjqmob_forms_slider">Make a slider for form input</a><br>
+    
+    
+    <div class="margin_bottom_20"></div>
+</div>
+        
+{% endblock %}

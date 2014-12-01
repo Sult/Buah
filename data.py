@@ -37,6 +37,7 @@ def add_first_hero_version():
         #base values
         base_stamina = 300,
         base_hitpoints = 100,
+        base_cargo = 1000,
         
         #hero % per point
         hitpoints_per_point = 1,

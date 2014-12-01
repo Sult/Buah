@@ -72,8 +72,8 @@ class Item(models.Model):
     description = models.TextField()
     volume = models.FloatField()
     
-    class Meta:
-        abstract = True
+    #class Meta:
+        #abstract = True
 
     def __unicode__(self):
         return self.name

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block page_title %}EatingPanda - {{ hero.name }} {% endblock %}
+
+{% block left_sidebar %}
+    {% include "nav_bar.html" %}
+{% endblock %}
+
+
+{% block content %}
+<div class="content_section">
+    <form action="{% url 'hero' hero.id %}" method="post">{% csrf_token %}
+    {{ hero_form.name.errors }}
+    {{ hero_form }}<input type="submit" value="Save" />
+    </form>
+    
+    <br>
+    
+    <div>
+        <table>
+            <tr>
+                <th colspan="2"><div class="header_03" style="font-size: 100%;">General</div></th>
+            </tr>
+            <tr>
+                <td>Town </td>
+                <td><a href="{% url 'town_info' hero.town.slug %}">{{ hero.town.name }}</a></td>
+            </tr>
+            <tr>
+                <td>Level </td>
+                <td>{{ hero.level }}</td>
+            </tr>
+            <tr>
+                <td>Experience </td>
+                <td>{{ hero.xp|intword }}</td>
+            </tr>
+            <tr>
+                <td colspan="2">{{ hero.created }}</td>
+            </tr>            
+        </table>
+    </div>
+    
+    
+    {% for attributes in hero.view_hero_attributes %}
+    <div>
+        <table>
+            <tr>
+                <th colspan="2"><br><div class="header_03" style="font-size: 100%;">{{ attributes.category|capfirst }}</div></th>
+            </tr>
+            {% for key, value in attributes.values.items %}
+            <tr>
+                <td>{{ key }}</td>
+                <td>{{ value.get_quality_display }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endfor %}
+    
+    
+    
+<div class="margin_bottom_20"></div>
+</div>
+{% endblock %}

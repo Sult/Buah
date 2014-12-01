@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load towns_tags %}
+
+{% block page_title %}Outskirt - {{ outskirt.resource.location }}{% endblock %}
+
+{% block left_sidebar %}
+    {% include "nav_bar.html" %}
+{% endblock %}
+
+
+{% block content %}
+<div class="content_section">
+    
+    
+    <div class="header_02">{{ outskirt_view.outskirt.resource.location }}</div>
+    <p><strong>Quality: </strong>{{ outskirt_view.outskirt.get_quality_display }}</p>
+    <p><strong>{{ outskirt_view.outskirt.resource.name }}: </strong>{{ outskirt_view.income }}</p>
+    {% if outskirt_view.stamina_loss %}
+    <p><strong>Stamina: </strong>{{ outskirt_view.loss }}</p>
+    {% endif %}
+    <p><strong>Room: </strong>
+    {% if not outskirt_view.room %}
+        <span style="color: red;">Full</span>
+    {% else %}
+        {{ outskirt_view.open_slots }}<br>
+        
+        {% if hero.active %}
+        <p class="form_errors">Your hero is already at work.</p>
+        {% else %}
+        <form action="" method="POST">{% csrf_token %}
+            {{ outskirt_form }}
+            <input type="submit" value="Go to work">
+        </form>
+        {% endif %}
+    {% endif %}
+    </p>
+    <br>
+    <br>
+    
+    {% if outskirt.outskirtworker_set.all.count > 0 %}
+    <p>Other players currently gathering resources at this location</p>
+    
+    <table>
+        <tr>
+            <th>User </th>
+            <th>Finnished </th>
+        </tr>
+        {% for worker in outskirt.outskirtworker_set.all %}
+        <tr>
+            <td><a href="#">{{ worker.hero.user.username }}</a></td>
+            <td>{{ worker.finnished_at }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+    
+    
+        
+        
+    <div class="margin_bottom_20"></div>
+</div>
+            
+{% endblock %}

@@ -103,6 +103,8 @@ class Profile(models.Model):
             new.created = datetime.utcnow().replace(tzinfo=utc)
             new.town=town
             new.name = new.random_hero_name()
+            new.hitpoints_current = new.total_hitpoints()
+            new.stamina_current = new.total_stamina()
             new.save()
 
 

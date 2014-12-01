@@ -1,0 +1,138 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<head>
+<link rel="stylesheet" type="text/css" href="{% static 'assets/css/default.css' %}">
+{% block css %}{% endblock %}
+
+<script type="text/javascript" src="{% static 'assets/js/jquery.js' %}"></script>
+<title>{% block page_title %}{% endblock %}</title>
+</head>
+
+
+<body>
+<div id="templatemo_wrapper_outer">
+<div id="templatemo_wrapper_inner">
+	
+	{# Banner #}
+    <div id="templatemo_banner">{% block banner %}{% endblock %}</div>
+    {# end Banner #}
+    
+    {# Top Menu #}
+    <div id="templatemo_menu">
+	    <ul>
+            <li><a {% if request.path == "/" %}class="current"{% endif %} href="{% url 'index' %}">Home</a></li>
+            <li><a {% if request.path == "" %}class="current"{% endif %} href="">Profile??</a></li>
+            <li><a {% if request.path == "" %}class="current"{% endif %} href="">Forum</a></li>
+            <li><a {% if request.path == "" %}class="current"{% endif %} href="">Contact</a></li>
+        </ul>
+    </div>
+    {# end Top Menu #}
+    
+    
+    <div id="templatemo_content_wrapper">
+		
+		{# Left Side Bar #}
+    	<div class="templatemo_side_bar margin_right_10">
+        {% block left_sidebar %}	
+        
+<!--
+            <div class="header_01">Title</div>
+            	
+            	<ul>
+                	<li><a href="#">PC</a></li>
+                    <li><a href="#">PLAYSTATION&reg; 3</a></li>
+                    <li><a href="#">PSP&reg; 3</a></li>
+                </ul>
+			
+            <div class="margin_bottom_20 horizontal_divider"></div> 
+
+			<div class="margin_bottom_20"></div>
+
+            <div class="header_01">Search Any Game</div>     
+            <form action="" method="post">
+                  <input type="text" id="search_field" />
+                  <input type="submit" value="" id="search_button" />
+            </form>
+            <div class="margin_bottom_20"></div>
+-->
+        {% endblock %}
+        </div>
+        {# End Left Side Bar #}
+        
+        {# Content #}
+        <div class="templatemo_content margin_right_10">
+        {% block content %}
+<!--
+        	<div class="content_section">
+           	  <div class="header_02">Arcade Game</div>
+              <div class="image_wrapper_01"><img src="/static/assets/images/templatemo_image_01.jpg" alt="image" /></div>
+                <p><span>Game Template is provided by <a href="http://www.templatemo.com" target="_parent">templatemo.com</a> for free of charge.</span> You may download, modify and apply this template for your personal or business websites. Credit goes to <a href="http://www.photovaco.com" target="_blank">Free Photos</a> for photos. Praesent tempor, arcu at egestas vestibulum, lorem elit viverra velit, sit amet gravida ligula ante et sem.</p>
+              <div class="margin_bottom_20"></div>
+                <div class="rc_btn_01 fl"><a href="#">Read More</a></div> 
+                
+                <div class="cleaner"></div>
+            </div>
+            
+            <div class="margin_bottom_20 horizontal_divider"></div> 
+			<div class="margin_bottom_20"></div>
+            
+            <div class="content_section">
+           	  <div class="header_02">Fighting Game</div>
+              <div class="image_wrapper_01"><img src="/static/assets/images/templatemo_image_02.jpg" alt="image" /></div>
+                <p><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span> Maecenas pretium diam commodo mauris vestibulum id accumsan enim ultrices. Quisque massa magna, porta nec congue et, elementum eget sem. Nunc vel libero libero, in dignissim urna. </p>
+			  <div class="margin_bottom_20"></div>
+              <div class="rc_btn_01 fl"><a href="#">Read More</a></div>  
+                <div class="cleaner"></div>              
+            </div>
+            
+        	<div class="margin_bottom_40"></div>
+-->
+        	
+        {% endblock %}
+        </div> 
+        {# End Content #}
+        
+        {# Right Menu Bar #}
+		{% block right_sidebar %}
+<!--        
+        <div class="templatemo_side_bar">
+            <div class="header_01">Latest News</div>
+            
+            <div class="latest_news border_bottom">
+                <div class="header_03"><a href="#">Aenean a bibendum augue</a></div>
+                <p>Fusce egestas feugiat turpis, ac ultrices turpis vestibulum at.</p>
+			</div>
+                        
+            <div class="margin_bottom_10"></div>
+            
+			<div class="latest_news">
+                <div class="header_03"><a href="#">Sed nec enim magna</a></div>
+                <p>Proin lectus orci, iaculis at facilisis sed, sodales a neque.</p>
+			</div>
+            
+          <div class="margin_bottom_20 horizontal_divider"></div> 
+			<div class="margin_bottom_20"></div>
+            
+            <div class="header_01">Sample Video</div>
+
+            <div class="latest_news">
+            	<div class="image_wrapper_02"><span></span><a href="#"><img src="/static/assets/images/templatemo_image_03.jpg" alt="video" /></a></div>
+                <p>Donec venenatis tellus non massa blandit vitae volutpat urna fringilla. Aenean ante lorem, vestibulum eu lacinia.</p>
+	      </div>
+                        
+          <div class="margin_bottom_10"></div>
+        </div> 
+-->
+		{% endblock %}
+    	{# End Right Menu Bar #}
+    	
+        <div class="cleaner"></div>    
+    </div>
+    
+</div>
+</div>
+
+ <div id="templatemo_footer">
+
+</div>
+</html>

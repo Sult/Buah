@@ -30,7 +30,7 @@ def heroes(request):
         #region = Region.objects.get(name=region_name)
         #region_actions = show_garage_regions(region_name)
     
-    return render(request, "view_heroes.html", {"heroes": heroes})
+    return render(request, "heroes/heroes.html", {"heroes": heroes})
 
 
 
@@ -44,4 +44,4 @@ def hero(request, hero_id):
 
     hero_form = HeroNameForm(initial={"name": hero.name})
     
-    return render(request, "view_hero.html", {"hero": hero, "hero_form": hero_form})
+    return render(request, "heroes/hero.html", {"hero": hero, "hero_form": hero_form})

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load users_tags %}
+
+{% block page_title %}{{ request.session.town_name }} - Tavern Hero Information{% endblock %}
+
+{% block left_sidebar %}
+    {% include "nav_bar.html" %}
+{% endblock %}
+
+
+{% block content %}
+<div class="content_section">
+    
+    <div class="header_02">{{ tavernhero.hero.name }}</div>
+    
+    {% if result.error %}
+        <p class="form_errors">{{ result.message }}</p>
+    {% elif not result.error %}
+        <p class="form_success">{{ result.message }}</p>
+    {% endif %}
+    
+    <table>
+    {% for attributes in tavernhero.hero.view_hero_attributes %}
+        <tr>
+            <th colspan="2"><br><div class="header_03" style="font-size: 150%; text-align: left;">{{ attributes.category|capfirst }}</div></th>
+        </tr>
+        {% for key, value in attributes.values.items %}
+        <tr>
+            <td>{{ key }}</td>
+            <td>{{ value.get_quality_display }}</td>
+        </tr>
+        {% endfor %}
+    {% endfor %}
+    </table>
+    <br>
+    <br>
+    <form action="" method="post">{% csrf_token %}
+        <div class="header_03">Price </div>
+        {{ tavernhero.price|munny }} <button type="submit" name="tavernhero_id" value="{{ tavernhero.id }}">BUY</button>
+    </form>
+    
+    <br><br><br>
+    
+    
+    <div class="margin_bottom_20"></div>
+</div>
+{% endblock %}
